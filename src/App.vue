@@ -52,4 +52,6 @@
 </template>
 
 <script setup>
+import "todomvc-common/base.css";
+import "todomvc-app-css/index.css";
 </script>
