@@ -24,6 +24,7 @@
             <button @click="deleteTodo(todo)" class="destroy"></button>
           </div>
           <input
+            v-focus="todo.id === editingTodoId"
             class="edit"
             v-model="todo.text"
             @blur="exitEditing(todo)"
@@ -64,6 +65,13 @@ import Header from "./components/Header.vue";
 export default {
   components: {
     Header,
+  },
+  directives: {
+    focus: {
+      mounted(el) {
+        el.focus();
+      },
+    },
   },
   setup() {
     const todos = ref([]);
