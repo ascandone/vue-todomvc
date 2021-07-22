@@ -10,21 +10,33 @@
       />
       <label for="toggle-all">Mark all as complete</label>
       <ul class="todo-list" v-for="todo in todos" v-bind:key="todo.key">
-        <li :class="{ completed: todo.completed, editing: false }">
+        <li
+          :class="{
+            completed: todo.completed,
+            editing: editingTodoId === todo.id,
+          }"
+        >
           <div class="view">
             <input class="toggle" type="checkbox" v-model="todo.completed" />
-            <label>{{ todo.text }} {{ todo.id }}</label>
-            <button @click="deleteTodo(todo.id)" class="destroy"></button>
+            <label @dblclick="setEditing(todo)">
+              {{ todo.text }}
+            </label>
+            <button @click="deleteTodo(todo)" class="destroy"></button>
           </div>
-          <input class="edit" value="Create a TodoMVC template" />
+          <input
+            class="edit"
+            v-model="todo.text"
+            @blur="exitEditing(todo)"
+            @keydown.enter="commitEdit(todo)"
+          />
         </li>
       </ul>
     </section>
     <footer v-if="todos.length !== 0" class="footer">
       <span class="todo-count">
         <strong>{{ activeItems.length }}</strong>
-        {{ pluralize("item", activeItems.length) }} left</span
-      >
+        {{ pluralize("item", activeItems.length) }} left
+      </span>
       <ul class="filters">
         <li>
           <a class="selected" href="#/">All</a>
@@ -57,6 +69,8 @@ export default {
     const todos = ref([]);
     const id = ref(0);
     const filter = ref("ALL");
+    const editingTodoId = ref(null);
+    const editingTodoValueBackup = ref("");
 
     const completedItems = computed(() =>
       todos.value.filter((todo) => todo.completed)
@@ -83,12 +97,27 @@ export default {
       });
     }
 
-    function deleteTodo(id) {
-      todos.value = todos.value.filter((todo) => todo.id !== id);
+    function deleteTodo(target) {
+      todos.value = todos.value.filter((todo) => todo.id !== target.id);
     }
 
     function pluralize(word, quantity) {
       return quantity === 1 ? word : word + "s";
+    }
+
+    function setEditing(todo) {
+      editingTodoValueBackup.value = todo.text;
+      editingTodoId.value = todo.id;
+    }
+
+    function exitEditing(todo) {
+      todo.text = editingTodoValueBackup.value;
+      editingTodoId.value = null;
+      editingTodoValueBackup.value = null;
+    }
+
+    function commitEdit() {
+      editingTodoId.value = null;
     }
 
     return {
@@ -101,6 +130,11 @@ export default {
       addTodo,
       deleteTodo,
       pluralize,
+      editingTodoId,
+      setEditing,
+      exitEditing,
+      commitEdit,
+      editingTodoValueBackup,
     };
   },
 };
