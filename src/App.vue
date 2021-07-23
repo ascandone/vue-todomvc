@@ -9,7 +9,7 @@
         v-model="allCompleted"
       />
       <label for="toggle-all">Mark all as complete</label>
-      <ul class="todo-list" v-for="todo in todos" v-bind:key="todo.key">
+      <ul class="todo-list" v-for="todo in visibleTodos" v-bind:key="todo.key">
         <li
           :class="{
             completed: todo.completed,
@@ -40,13 +40,17 @@
       </span>
       <ul class="filters">
         <li>
-          <a class="selected" href="#/">All</a>
+          <a :class="{ selected: filter === 'ALL' }" href="#/">All</a>
         </li>
         <li>
-          <a href="#/active">Active</a>
+          <a :class="{ selected: filter === 'ACTIVE' }" href="#/active">
+            Active
+          </a>
         </li>
         <li>
-          <a href="#/completed">Completed</a>
+          <a :class="{ selected: filter === 'COMPLETED' }" href="#/completed">
+            Completed
+          </a>
         </li>
       </ul>
       <button
@@ -98,7 +102,32 @@ export default {
     });
 
     const id = ref(todos.value.length);
+
     const filter = ref("ALL");
+    window.addEventListener("hashchange", () => {
+      switch (location.hash) {
+        case "#/active":
+          filter.value = "ACTIVE";
+          break;
+        case "#/completed":
+          filter.value = "COMPLETED";
+          break;
+        default:
+          filter.value = "ALL";
+      }
+    });
+
+    const visibleTodos = computed(() => {
+      switch (filter.value) {
+        case "ALL":
+          return todos.value;
+        case "COMPLETED":
+          return completedItems.value;
+        case "ACTIVE":
+          return activeItems.value;
+      }
+    });
+
     const editingTodoId = ref(null);
     const editingTodoValueBackup = ref("");
 
@@ -127,6 +156,7 @@ export default {
       allCompleted,
       editingTodoId,
       editingTodoValueBackup,
+      visibleTodos,
       addTodo(text) {
         todos.value.push({
           text,
