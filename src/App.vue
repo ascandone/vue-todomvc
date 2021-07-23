@@ -49,7 +49,11 @@
           <a href="#/completed">Completed</a>
         </li>
       </ul>
-      <button v-if="completedItems.length !== 0" class="clear-completed">
+      <button
+        @click="clearCompleted"
+        v-if="completedItems.length !== 0"
+        class="clear-completed"
+      >
         Clear completed
       </button>
     </footer>
@@ -146,6 +150,10 @@ export default {
       editingTodoId.value = null;
     }
 
+    function clearCompleted() {
+      todos.value = activeItems.value;
+    }
+
     return {
       todos,
       filter,
@@ -161,6 +169,7 @@ export default {
       exitEditing,
       commitEdit,
       editingTodoValueBackup,
+      clearCompleted,
     };
   },
 };
