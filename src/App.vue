@@ -59,7 +59,7 @@
 <script>
 import "todomvc-common/base.css";
 import "todomvc-app-css/index.css";
-import { computed, ref } from "vue";
+import { computed, ref, watch, watchEffect } from "vue";
 import Header from "./components/Header.vue";
 
 export default {
@@ -74,8 +74,26 @@ export default {
     },
   },
   setup() {
-    const todos = ref([]);
-    const id = ref(0);
+    const STORAGE_NAMESPACE = "todos";
+
+    function deserialize() {
+      const storage = localStorage.getItem(STORAGE_NAMESPACE);
+      if (storage == null) {
+        return undefined;
+      }
+
+      // TODO catch err
+      const todos = JSON.parse(storage);
+
+      return todos.map((todo, index) => ({ ...todo, id: index }));
+    }
+    const todos = ref(deserialize() ?? []);
+
+    watchEffect(() => {
+      localStorage.setItem(STORAGE_NAMESPACE, JSON.stringify(todos.value));
+    });
+
+    const id = ref(todos.value.length);
     const filter = ref("ALL");
     const editingTodoId = ref(null);
     const editingTodoValueBackup = ref("");
