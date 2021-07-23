@@ -24,11 +24,12 @@
             <button @click="deleteTodo(todo)" class="destroy"></button>
           </div>
           <input
-            v-focus="todo.id === editingTodoId"
+            v-focus="editingTodoId === todo.id"
             class="edit"
             v-model="todo.text"
-            @blur="exitEditing(todo)"
-            @keydown.enter="commitEdit(todo)"
+            @blur="commitEdit(todo)"
+            @keyup.enter="commitEdit(todo)"
+            @keyup.esc="exitEditing(todo)"
           />
         </li>
       </ul>
@@ -76,8 +77,10 @@ export default {
   },
   directives: {
     focus: {
-      mounted(el) {
-        el.focus();
+      updated(el, binding) {
+        if (binding.value) {
+          el.focus();
+        }
       },
     },
   },
