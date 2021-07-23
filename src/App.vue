@@ -119,57 +119,42 @@ export default {
       },
     });
 
-    function addTodo(text) {
-      todos.value.push({
-        text,
-        completed: false,
-        id: id.value++,
-      });
-    }
-
-    function deleteTodo(target) {
-      todos.value = todos.value.filter((todo) => todo.id !== target.id);
-    }
-
-    function pluralize(word, quantity) {
-      return quantity === 1 ? word : word + "s";
-    }
-
-    function setEditing(todo) {
-      editingTodoValueBackup.value = todo.text;
-      editingTodoId.value = todo.id;
-    }
-
-    function exitEditing(todo) {
-      todo.text = editingTodoValueBackup.value;
-      editingTodoId.value = null;
-      editingTodoValueBackup.value = null;
-    }
-
-    function commitEdit() {
-      editingTodoId.value = null;
-    }
-
-    function clearCompleted() {
-      todos.value = activeItems.value;
-    }
-
     return {
       todos,
       filter,
       completedItems,
       activeItems,
       allCompleted,
-
-      addTodo,
-      deleteTodo,
-      pluralize,
       editingTodoId,
-      setEditing,
-      exitEditing,
-      commitEdit,
       editingTodoValueBackup,
-      clearCompleted,
+      addTodo(text) {
+        todos.value.push({
+          text,
+          completed: false,
+          id: id.value++,
+        });
+      },
+      deleteTodo(target) {
+        todos.value = todos.value.filter((todo) => todo.id !== target.id);
+      },
+      pluralize(word, quantity) {
+        return quantity === 1 ? word : word + "s";
+      },
+      setEditing(todo) {
+        editingTodoValueBackup.value = todo.text;
+        editingTodoId.value = todo.id;
+      },
+      exitEditing(todo) {
+        todo.text = editingTodoValueBackup.value;
+        editingTodoId.value = null;
+        editingTodoValueBackup.value = null;
+      },
+      commitEdit() {
+        editingTodoId.value = null;
+      },
+      clearCompleted() {
+        todos.value = activeItems.value;
+      },
     };
   },
 };
